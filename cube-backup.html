@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="style.css"/>
+</head>
+<body>
+
+<!--<canvas id="myCanvas" width="1000" height="700" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>-->
+<script src="js/three.min.js"></script>
+<script>
+
+  var frames = new Array();
+  var currentFrame = -1;
+  //frames[0] = makeFramesArray();
+  //var squares = new Array(8);
+  var squares = makeSquaresArray();
+  //frames[0] = squares;
+  var container1 = document.createElement("div");
+  container1.style.width="1600px";
+  container1.style.height="180px";
+  container1.style.marginBottom="25px";
+  container1.style.display="inline";
+  var layoutTable = document.createElement("table");
+  //container1.style.background="yellow";
+  layoutTable.style.width = "100%";
+  //layoutTable.style.display = "inline";
+  container1.appendChild(layoutTable);
+  document.body.appendChild(container1);
+
+
+  function makeSquaresArray() {
+      var temp = new Array(8);
+      for(var i=0;i<8;i++){
+        temp[i] = new Array(8);
+        for(var j=0;j<8;j++){
+          temp[i][j] = new Array(8);
+        }
+  }
+  /*for(var i=0;i<8;i++){
+    squares[i] = new Array(8);
+    for(var j=0;j<8;j++){
+      squares[i][j] = new Array(8);
+    }*/
+    return temp;
+  }
+
+  function updateSquares() {
+    for(var i=0;i<8;i++){
+      for(var j=0;j<8;j++){
+        for(var k=0; k<8; k++){
+          if(frames[currentFrame][i][j][k])
+          squares[i][j][k].classList.add('class1');
+          else {
+            squares[i][j][k].classList.remove('class1');
+          }
+        }
+      }
+    }
+  }
+
+  function makeFramesArray() {
+    var temp = new Array(8);
+    for(var i=0;i<8;i++){
+      temp[i] = new Array(8);
+      for(var j=0;j<8;j++){
+        temp[i][j] = new Array(8);
+        for(var k=0; k<8; k++){
+          temp[i][j][k] = squares[i][j][k].classList.contains('class1');
+        }
+      }
+    }
+    return temp;
+  }
+
+
+
+  drawGrid();
+
+  function drawGrid() {
+    for(var k=0; k<8; k++) {
+    var myTable = new Array(8);
+    //myTable.style.marginBottom = "5px";
+    myTable[k] = document.createElement("table");
+    var layoutTableTr = document.createElement("tr");
+    var layoutTableTd = document.createElement("td");
+    layoutTableTd.style.verticalAlign = "top";
+    layoutTableTr.style.float = "left";
+    for(var i=0; i<8; i++){
+      var tr = document.createElement("tr");
+      myTable[k].appendChild(tr);
+      for(var j=0; j<8; j++){
+        var div = document.createElement("div");
+        div.classList.add('squares');
+        if(j==0){
+          div.style.marginLeft = "10px"
+        }
+        div.onclick = function(){
+          this.classList.toggle('class1');
+          drawCube();
+          drawCube1(currentFrame);
+          animate1(currentFrame);
+          animate()
+          //console.log("current frame: " + currentFrame);
+          //console.log("frame length: " + k);//frames[currentFrame][k][i][j]);
+          //frames[currentFrame][k][i][j] = true;//!frames[currentFrame][k][i][j];
+        }
+        console.log("frame length: " + k);//frames[currentFrame][k][i][j]);
+        squares[k][i][j] = div;
+        console.log("current frame: " + currentFrame);
+
+        //frames[currentFrame][k][i][j] = true;
+        tr.appendChild(div);
+      }
+
+    }
+    layoutTableTd.appendChild(myTable[k]);
+    layoutTableTr.appendChild(layoutTableTd);
+    layoutTable.appendChild(layoutTableTr);
+  }
+  }
+
+  /*$(squares[0][0][0]).click(function() {
+    this.css({
+      'background': blue
+    });
+  })*/
+
+  function clickSquare(x) {
+    console.log("clicked");
+    //var div = squares[0][0][0];
+    //div.style.background = "blue";
+    //console.log(squares[0][0][0].length);
+    //squares[1][1][1].style.background = "blue";
+    //document.write(j)
+    //squares[k][i][j].style.background = "blue";
+    //squares[0][0][0].style.background = "blue";
+  }
+
+  function print() {
+    for(var i=0; i<8; i++){
+      for(var j=0; j<8; j++){
+        for(var k=0; k<8; k++){
+          var num = i * 64 + j * 8 + k;
+          if(frames[currentFrame][i][j][k] == true){
+          //if(squares[i][j][k].classList.contains('class1')){
+            console.log(num + ": " + 1);
+          }
+          else {
+            console.log(num + ": " + 0);
+          }
+        }
+      }
+    }
+  }
+
+  function fill(x) {
+      for(var j=0; j<8; j++){
+        for(var k=0; k<8; k++){
+          //var num = i * 64 + j * 8 + k;
+          if(squares[x][j][k].classList.contains('class1')){
+          }
+          else {
+            squares[x][j][k].classList.add('class1');
+          }
+        }
+    }
+  }
+
+  function clearSquare(x) {
+    console.log("called clear");
+      for(var j=0; j<8; j++){
+        for(var k=0; k<8; k++){
+          //var num = i * 64 + j * 8 + k;
+          if(!squares[x][j][k].classList.contains('class1')){
+          }
+          else {
+            squares[x][j][k].classList.remove('class1');
+          }
+        }
+    }
+  }
+
+  function fillAll() {
+    for(var i = 0; i < 8; i++) {
+      fill(i);
+    }
+    drawCube();
+    drawCube1(frameCount);
+    animate();
+    animate1(frameCount);
+  }
+
+  function clearAll() {
+    for(var i = 0; i < 8; i++) {
+      clearSquare(i);
+    }
+  }
+
+  function decreaseZ() {
+    for(var i = 0; i < 7; i++) {
+      for(var j = 0; j < 8; j++) {
+        for(var k = 0; k < 8; k++) {
+          if(squares[i+1][j][k].classList.contains('class1')){
+            squares[i][j][k].classList.add('class1');
+          } else {
+            squares[i][j][k].classList.remove('class1');
+          }
+        }
+      }
+    }
+    clearSquare(7);
+  }
+
+  function increaseZ() {
+    for(var i = 7; i > 0; i--) {
+      for(var j = 0; j < 8; j++) {
+        for(var k = 0; k < 8; k++) {
+          if(squares[i-1][j][k].classList.contains('class1')){
+            squares[i][j][k].classList.add('class1');
+          } else {
+            squares[i][j][k].classList.remove('class1');
+          }
+        }
+      }
+    }
+    clearSquare(0);
+  }
+
+  function decreaseY() {
+    for(var i = 0; i < 8; i++) {
+      for(var j = 7; j >= 0; j--) {
+        for(var k = 0; k < 8; k++) {
+          if(j > 0 && squares[i][j - 1][k].classList.contains('class1')){
+            squares[i][j][k].classList.add('class1');
+          } else {
+            squares[i][j][k].classList.remove('class1');
+          }
+        }
+      }
+    }
+  }
+
+  function increaseY() {
+    for(var i = 0; i < 8; i++) {
+      for(var j = 0; j < 8; j++) {
+        for(var k = 0; k < 8; k++) {
+          if(j < 7 && squares[i][j+1][k].classList.contains('class1')){
+            squares[i][j][k].classList.add('class1');
+          } else {
+            squares[i][j][k].classList.remove('class1');
+          }
+        }
+      }
+    }
+  }
+
+  function increaseX() {
+    for(var i = 0; i < 8; i++) {
+      for(var j = 0; j < 8; j++) {
+        for(var k = 7; k >= 0; k--) {
+          if(k > 0 && squares[i][j][k-1].classList.contains('class1')){
+            squares[i][j][k].classList.add('class1');
+          } else {
+            squares[i][j][k].classList.remove('class1');
+          }
+        }
+      }
+    }
+  }
+
+  function decreaseX() {
+    for(var i = 0; i < 8; i++) {
+      for(var j = 0; j < 8; j++) {
+        for(var k = 0; k < 8; k++) {
+          if(k < 7 && squares[i][j][k+1].classList.contains('class1')){
+            squares[i][j][k].classList.add('class1');
+          } else {
+            squares[i][j][k].classList.remove('class1');
+          }
+        }
+      }
+    }
+  }
+
+  /*function drawGrid() {
+  var c = document.getElementById("myCanvas");
+  var ctx = c.getContext("2d");
+  for(var i=0; i<8; i++){
+    for(var j=0; j<8; j++){
+      ctx.rect(20 * i, 20 * j, 20, 20);
+      ctx.stroke();
+      ctx.fillStyle = "#0000FF"
+      ctx.fillRect(20 * i, 20 * j, 20, 20);
+    }
+  }
+}*/
+</script>
+
+
+
+  <button onclick="print()">Print</button>
+  <button onclick="fillAll()">Fill All</button>
+  <button onclick="clearAll()">Clear All</button>
+  <button onclick="decreaseX()">X-</button>
+  <button onclick="increaseX()">X+</button>
+  <button onclick="decreaseY()">Y-</button>
+  <button onclick="increaseY()">Y+</button>
+  <button onclick="decreaseZ()">Z-</button>
+  <button onclick="increaseZ()">Z+</button>
+  <button onclick="fill(0)">Fill 0</button>
+  <button onclick="fill(1)">Fill 1</button>
+  <button onclick="fill(2)">Fill 2</button>
+  <button onclick="fill(3)">Fill 3</button>
+  <button onclick="fill(4)">Fill 4</button>
+  <button onclick="fill(5)">Fill 5</button>
+  <button onclick="fill(6)">Fill 6</button>
+  <button onclick="fill(7)">Fill 7</button>
+  <button onclick="clearSquare(0)">Clear</button>
+  <button onclick="clearSquare(1)">Clear 1</button>
+  <button onclick="clearSquare(2)">Clear 2</button>
+  <button onclick="clearSquare(3)">Clear 3</button>
+  <button onclick="clearSquare(4)">Clear 4</button>
+  <button onclick="clearSquare(5)">Clear 5</button>
+  <button onclick="clearSquare(6)">Clear 6</button>
+  <button onclick="clearSquare(7)">Clear 7</button>
+  <button onclick="addFrame()">Add Frame</button>
+  <p id="htmlCurrentFrame">Frame: </p>
+  <!--<button onclick="resetView()">Reset View</button>-->
+
+
+<script>
+  var camera, scene, renderer;
+  var geometry, material, mesh;
+  var resetPosition;
+
+  init();
+  animate();
+
+  function drawCube() {
+    geometry = new THREE.BoxGeometry( 0.1, 0.1, 0.1 );
+  	//material = new THREE.MeshNormalMaterial();
+
+    var boxes = [];
+    for(var i=0; i <8; i++){
+      for(var j=0; j <8; j++) {
+        for(var k=0; k< 8; k++){
+          if(squares[j][7-k][i].classList.contains('class1')){
+            material = new THREE.MeshBasicMaterial({color: 0x0000ff});
+          } else {
+            material = new THREE.MeshBasicMaterial();
+          }
+          mesh = new THREE.Mesh( geometry, material );
+          mesh.position.setX(0.15 * i);
+          mesh.position.setY(0.15 * j);
+          mesh.position.setZ(-0.15 * k);
+          boxes.push(mesh);
+          scene.add(mesh);
+        }
+      }
+    }
+  }
+
+
+
+  function init() {
+
+  	camera = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 0.01, 10 );
+  	camera.position.z = 1;
+    resetPosition = camera.position;
+  	scene = new THREE.Scene();
+    //document.addEventListener('mousemove', onDocumentMouseMove, false );
+
+  	/*mesh = new THREE.Mesh( geometry, material );
+    var boxes = [];
+    var boxX = [];
+    box.push(mesh);
+    boxes.push(box);
+  	//scene.add( mesh );
+    scene.add(boxes[0][0]);
+    mesh.position.setX(0.1);*/
+    drawCube();
+
+  	renderer = new THREE.WebGLRenderer( { antialias: false } );
+  	renderer.setSize( window.innerWidth/2, window.innerHeight/2 );
+    renderer.domElement.addEventListener( 'mousemove', onDocumentMouseMove, false );
+    //renderer.domElement.float = "right";
+
+  	document.body.appendChild( renderer.domElement );
+
+
+  }
+
+  function animate() {
+
+  	//requestAnimationFrame( animate );
+    /*var radius = 2;
+    var angle = 1;
+    //boxes[i].rotation.x += 0.001;
+  	//boxes[i].rotation.y += 0.02;
+    camera.position.x = radius * Math.cos( angle );
+    camera.position.z = radius * Math.sin( angle );
+    angle += 0.05;*/
+
+  	renderer.render( scene, camera );
+
+  }
+
+  function onDocumentMouseMove( event ) {
+    console.log("mouse moved");
+    event.preventDefault();
+
+      var  theta = event.clientX;
+      var  phi = event.clientY;
+      var radius = 2;
+        phi = Math.min( 180, Math.max( 0, phi ) );
+
+        /*camera.position.x = radius * Math.sin( theta * Math.PI / 360 )
+                            * Math.cos( phi * Math.PI / 360 );
+        camera.position.y = radius * Math.sin( phi * Math.PI / 360 );
+        camera.position.z = radius * Math.cos( theta * Math.PI / 360 )
+                            * Math.cos( phi * Math.PI / 360 );*/
+        camera.position.x = radius * Math.cos(theta * Math.PI / 360);
+        camera.rotation.y =  Math.cos(theta * Math.PI / 360);
+        //camera.position.y = radius * Math.cos(theta * Math.PI / 360)
+        //camera.position.z = -radius * Math.sin(theta * Math.PI / 360);
+        camera.updateMatrix();
+
+    //render();
+    animate();
+
+}
+
+  function resetView(){
+    camera.position = resetPosition;
+    //camera.position.z=1;
+    camera.updateMatrix();
+  }
+</script>
+<div>
+<script>
+      var camera1 = new Array(), scene1 = new Array(), renderer1 = new Array();
+      var geometry1 = new Array(), material1 = new Array(), mesh1 = new Array();
+      var resetPosition1 = new Array();
+      var frameCount = 0;
+
+      //init1(frameCount - 1);
+      //animate1();
+      addFrame(); // runs init1 initially
+
+      function drawCube1(z) {
+        //for(var z = 0; z < frameCount; z++){
+        geometry1[z] = new THREE.BoxGeometry( 0.1, 0.1, 0.1 );
+        //material = new THREE.MeshNormalMaterial();
+        console.log(z);
+        var boxes1 = [];
+        frames[currentFrame] = makeFramesArray();
+        for(var i=0; i <8; i++){
+          for(var j=0; j <8; j++) {
+            for(var k=0; k< 8; k++){
+              if(frames[z][j][7-k][i]){
+                //console.log("yes");
+                material1[z] = new THREE.MeshBasicMaterial({color: 0x0000ff});
+              } else {
+                //console.log("no");
+                material1[z] = new THREE.MeshBasicMaterial();
+              }
+              mesh1[z] = new THREE.Mesh( geometry1[z], material1[z] );
+              mesh1[z].position.setX(0.15 * i);
+              mesh1[z].position.setY(0.15 * j);
+              mesh1[z].position.setZ(-0.15 * k);
+              boxes1.push(mesh1[z]);
+              scene1[z].add(mesh1[z]);
+            }
+          }
+        }
+      }
+    //}
+
+    function addFrame() {
+      //frames.push(squares);
+      currentFrame++;
+      //frames[currentFrame] = makeFramesArray();
+      console.log(frames.length);
+      //squares = makeSquaresArray();
+      document.getElementById("htmlCurrentFrame").innerHTML = "Frame: " + currentFrame;
+      if(currentFrame == frameCount) {
+      init1(frameCount);
+      frameCount++;
+      }
+    }
+
+      function init1(i) {
+        //for(var i =0; i < frameCount; i++){
+          camera1[i] = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 0.01, 10 );
+          camera1[i].position.z = 1;
+          scene1[i] = new THREE.Scene();
+          drawCube1(i);
+
+          renderer1[i] = new THREE.WebGLRenderer( { antialias: true } );
+          renderer1[i].setSize( window.innerWidth/4, window.innerHeight/4 );
+          renderer1[i].domElement.onclick = function() {
+              //console.log("test" + renderer1[i].domElement.);
+              var i = 0;
+              var child = this;
+              while( (child = child.previousSibling) != null )
+                i++;
+              console.log("count: " + i);
+              var j = 0;
+              child = renderer1[0].domElement;
+              while ((child = child.previousSibling) != null)
+                j++;
+              console.log("real count: " + (i-j));
+              var k = i - j;
+              if(k != 0){ //Change current frame
+                currentFrame = k-1;
+                k = k-1;
+                updateSquares();
+                drawCube();
+                drawCube1(currentFrame);
+                animate1(currentFrame);
+              }
+              if(k == 0) {
+                currentFrame = k;
+                updateSquares();
+                drawCube();
+                drawCube1(currentFrame);
+                animate1(currentFrame);
+              }
+              document.getElementById("htmlCurrentFrame").innerHTML = "Frame: " + k;
+          }
+          document.body.appendChild( renderer1[i].domElement );
+        //}
+          animate1(i);
+      }
+
+      function animate1(i) {
+        //for( var i = 0; i < frameCount; i++){
+        //requestAnimationFrame( animate1 );
+        renderer1[i].render( scene1[i], camera1[i] );
+    //  }
+      }
+</script>
+</div>
+
+</body>
+</html>

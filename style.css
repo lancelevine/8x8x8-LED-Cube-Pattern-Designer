@@ -1,0 +1,12 @@
+.class1 {
+  background: #0000FF;
+}
+
+.squares {
+  stroke: black 1px;
+  width: 15px;
+  height: 15px;
+  border: 1px solid #000000;
+  display: inline-block;
+  margin-left: 5px;
+}
